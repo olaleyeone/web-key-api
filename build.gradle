@@ -1,0 +1,72 @@
+buildscript {
+    dependencies {
+        classpath files('libs/docker-app-plugin-0.0.2.jar')
+    }
+}
+
+plugins {
+    id 'java'
+    id "jacoco"
+}
+
+apply plugin: 'com.github.olaleyeone.docker-app'
+
+group = 'com.olaleyeone'
+version = '0.0.1'
+sourceCompatibility = '1.8'
+
+dockerApp {
+    mainClassName = 'com.github.olaleyeone.webkey.Application'
+    docker {
+        repository "olaleye"
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+//    compileOnly 'org.projectlombok:lombok'
+//    annotationProcessor 'org.projectlombok:lombok'
+    implementation "com.google.code.gson:gson:2.8.6"
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                minimum = 0.95
+            }
+            excludes = [
+                    'com.github.olaleyeone.auth.bootstrap.*',
+                    'com.github.olaleyeone.auth.configuration.*'
+            ]
+        }
+    }
+}
+check.dependsOn jacocoTestCoverageVerification
