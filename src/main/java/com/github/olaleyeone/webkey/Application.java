@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 
@@ -32,6 +33,8 @@ public class Application {
         ResponseHandler responseHandler = new ResponseHandler(gson);
         StreamReader streamReader = new StreamReader();
         KeyParser keyParser = new KeyParser();
+
+        httpServer.createContext("/health", exchange -> responseHandler.sendData(exchange, Collections.singletonMap("status", "UP")));
 
         httpServer.createContext("/from-public-key", exchange -> {
             try {

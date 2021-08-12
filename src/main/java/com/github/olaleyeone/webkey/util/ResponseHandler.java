@@ -17,12 +17,17 @@ public class ResponseHandler {
     }
 
     public void sendData(HttpExchange exchange, Object data) throws IOException {
-        String response = gson.toJson(data);
-        exchange.getResponseHeaders().add("content-type", "application/json");
-        exchange.sendResponseHeaders(200, response.getBytes().length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response.getBytes());
-            os.flush();
+        try {
+            String response = gson.toJson(data);
+            exchange.getResponseHeaders().add("content-type", "application/json");
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+                os.flush();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendError(exchange, e);
         }
     }
 
